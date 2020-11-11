@@ -47,6 +47,8 @@ def copositive_test(matrix, mode = 'non-strict'):
             for j in range(i+1,d):
                 if matrix[i][j] < 0 and matrix[i][j]**2 > matrix[i][i] * matrix[j][j]:
                     return False
+                else if d == 2:
+                    reutrn True
             #If there is a whole column/row of Q that is nonnegative, we can "delete" it, because then
             #the copositivity of is not dependend on that column/row. 
             #This is important because it can reduce the size of the matrix significantly for the next test
@@ -66,6 +68,8 @@ def copositive_test(matrix, mode = 'non-strict'):
             for j in range(i+1,d):
                 if matrix[i][j] < 0 and matrix[i][j]**2 >= matrix[i][i] * matrix[j][j]:
                     return False
+                else if d == 2:
+                    return True
             if all(matrix[i,:] >= np.zeros(d)):
                 minor = np.delete(np.delete(matrix,i, axis = 0), i, axis = 1)
                 return copositive_test(minor,mode)
