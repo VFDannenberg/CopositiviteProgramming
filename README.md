@@ -27,11 +27,19 @@ We will develop and improve these implementations in the future, so tips and com
 ----------------
 
 [1] S. Bundfuss and M. Dür -- Algorithmic copositivity detection by simplicial partition, Linear Algebra and its Applicaitons 428, p. 1511- 1532, 2008
+
 [2] P.J.C. Dickinson and L. Gijben -- On the computational complexity of membership problems for the completely positive cone and its dual, Computional Optimization and Applications 57, p. 403-415, 2014
+
 [3] M. Dutour Sikiric -- Copositive, https://github.com/MathieuDutSik/polyhedral_common, 2018
+
 [4] M. Dutour Sikiric, A.Schürmann and F.Vallentin -- A simplex algorithm for rational CP-Factorization -- Mathematical Programming, 2020
+
 [5] J.W. Gaddum -- Linear inequalities and quadratic forms, Pacific Journal of Mathematics 8, p. 411-414, 1958
+
 [6] G. Havas, B.S. Majewski and K.R. Matthews -- Extended GCD and Hermite Normal Form Algorithms via Lattice Basis Reduction, Experimental Mathematics 7, p. 125-136, 1998
+
 [7] P.N. Malkin -- Computing Markov bases, Gröbner bases, and extrem rays, PhD thesis Université catholique de Louvain, 2007
+
 [8] A. Schürmann -- Computing the copositive minimum, In preperation 
+
 [9] https://github.com/cddlib/cddlib
