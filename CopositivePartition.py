@@ -12,8 +12,9 @@ def copositive_partition(matrix):
     if len(matrix[0,:]) != len(matrix[:,0]):
         print(matrix,' is not square')
         return 0
-    if matrix.T != matrix:
-        print(matrix,' is not symmetric')
+    if all((matrix.T != matrix).reshape(d**2,)) == True:
+        print(matrix, ' is not symmetric')
+        return 0
     if not copositive_test(matrix,'strict'):
         print('Warning:', matrix, ' is not strictly copositive. Algorithm might not terminate\n')
     d = len(matrix)

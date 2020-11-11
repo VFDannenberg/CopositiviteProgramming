@@ -16,12 +16,13 @@ def copositive_test(matrix, mode = 'non-strict'):
     if len(matrix) != len(matrix[0]):
         print(matrix, ' is not square')
         return 0
-    if matrix.T != matrix:
-        pritn(matirx, ' is not symmetric')
+    d = len(matrix)
+    if all((matrix.T != matrix).reshape(d**2,)) == True:
+        print(matrix, ' is not symmetric')
         return 0
     if mode not in ['strict', 'non-strict']:
         print(mode, ' is not a valid test mode, please specify either "non-strict" (by default) or "strict"')
-    d = len(matrix)
+    
     if mode == 'non-strict':
         #This is the pre-processing section.
         #Here we check if the matrix is either obviously copositive ( if it is nonnegative) or non-copositive,
