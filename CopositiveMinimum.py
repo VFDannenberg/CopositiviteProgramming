@@ -10,19 +10,19 @@ from RationalMatrixTools import inverse_matrix, hermite_normal_form, scale_to_in
 #Then a modified Fincke-Pohst-Algorithm is applied to each of those cones
 def compute_copositive_minimum(matrix, minC = 'None', mode = 'complete'):
     #Testing for "squareness", symmetry and strict copositivity
-    if not copositive_test(matrix,'strict'):
+    if not copositive_test(matrix.copy(),'strict'):
         print(matrix, ' is not strictly copositive')
         return 0,0
     if len(matrix[0,:]) != len(matrix[:,0]):
         print(matrix, ' is not square')
         return 0,0
+    d = len(matrix)
     if all((matrix.T != matrix).reshape(d**2,)) == True:
         print(matrix, ' is not symmetric')
         return 0
     if mode not in ['complete', 'partial']:
         print(mode, ' is not a valid computation mode, please use either "complete" (by default) or "partial"')
         return 0,0
-    d = len(matrix)
     #Calculating the simplicial partition
     P = copositive_partition(matrix.copy())
     #If minC is not supplied by the user, we choose the smallest diagonal entry as our start value
@@ -169,15 +169,15 @@ def Update(i,d,fun,hermit_matrix,PartialSums,v,m,n,startvalue,alpha,minC):
         number = alpha[j+1:d] @ hermit_matrix[j][j+1:d]
         startvalue[j] = F(fractional_part(-number),hermit_matrix[j][j])
         alpha[j] = F(n[j],hermit_matrix[j][j]) + startvalue[j]
-        v[j] = number + alpha[j]*hermit_matrix[j][j]
+        v[j] = number + alpha[j] * hermit_matrix[j][j]
     for j in range(i-1,-1,-1):
         number = 2 * alpha[j+1:d] @ fun[j,j+1:d]
         if j < d-1:
             Sum = PartialSums[j+1]
         else:
             Sum = 0
-        PartialSums[j] = alpha[j]**2 *fun[j][j] + alpha[j]*number + Sum
-        c =  Sum + startvalue[j]*number + fun[j][j] * startvalue[j]**2
+        PartialSums[j] = alpha[j]**2 * fun[j][j] + alpha[j] * number + Sum
+        c =  Sum + startvalue[j] * number + fun[j][j] * startvalue[j]**2
         if c >= minC:
             m[j] = 0
         else:
@@ -187,7 +187,7 @@ def Update(i,d,fun,hermit_matrix,PartialSums,v,m,n,startvalue,alpha,minC):
 def compute_upper_bound(a,b,c):
     a2 = a/b
     c2 = c/b
-    x = floor(1/2 *(-a2 + sqrt( a2 ** 2 + 4*c2)))
+    x = floor(1/2 * (-a2 + sqrt( a2 ** 2 + 4*c2)))
     while True:
         test1 = (c2 - a2 * x - x**2 >= 0)
         test2 = (c2 - a2 * (x + 1) - (x + 1)**2 >= 0)

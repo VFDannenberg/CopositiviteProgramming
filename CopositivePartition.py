@@ -12,12 +12,13 @@ def copositive_partition(matrix):
     if len(matrix[0,:]) != len(matrix[:,0]):
         print(matrix,' is not square')
         return 0
+    d = len(matrix)
     if all((matrix.T != matrix).reshape(d**2,)) == True:
         print(matrix, ' is not symmetric')
         return 0
     if not copositive_test(matrix,'strict'):
         print('Warning:', matrix, ' is not strictly copositive. Algorithm might not terminate\n')
-    d = len(matrix)
+    
     #Initializing the (d-1)-dimensional standard simplex as a matrix of its vertices e_1,...,e_d
     Delta = np.full([d,d],F(0,1))
     for i in range(d):

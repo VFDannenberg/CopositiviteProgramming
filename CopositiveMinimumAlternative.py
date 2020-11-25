@@ -2,6 +2,7 @@ import numpy as np
 from math import ceil
 from fractions import Fraction as F 
 from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
+from CopositiveTest import copositive_test
 
 #This is still an experimental method, which doesn't really work right now.
 #It also uses the idea of the Fincke-Pohst-Algorithm. Howerever, unlike the classic method, 
@@ -15,19 +16,19 @@ from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 
 def compute_copositive_minimum_qcqp(matrix,mode = 'complete'):
     #Testing for "squareness", symmetry and strict copositivity
-    if not copositive_test(matrix,'strict'):
+    if not copositive_test(matrix.copy(),'strict'):
         print(matrix, ' is not strictly copositive')
         return 0,0
     if len(matrix[0,:]) != len(matrix[:,0]):
         print(matrix, ' is not square')
         return 0,0
+    d = len(matrix)
     if all((matrix.T != matrix).reshape(d**2,)) == True:
         print(matrix, ' is not symmetric')
         return 0
     if mode not in ['complete', 'partial']:
         print(mode, ' is not a valid computation mode, please use either "complete" (by default) or "partial"')
         return 0,0
-    d = len(matrix)
     #Again we initialize the iterables, as in the classic method.
     m = [0 for n in range(d)]
     v = np.zeros(d)
