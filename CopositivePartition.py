@@ -16,7 +16,7 @@ def copositive_partition(matrix):
     if all((matrix.T != matrix).reshape(d**2,)) == True:
         print(matrix, ' is not symmetric')
         return 0
-    if not copositive_test(matrix,'strict'):
+    if not copositive_test(matrix.copy(),'strict'):
         print('Warning:', matrix, ' is not strictly copositive. Algorithm might not terminate\n')
     
     #Initializing the (d-1)-dimensional standard simplex as a matrix of its vertices e_1,...,e_d
