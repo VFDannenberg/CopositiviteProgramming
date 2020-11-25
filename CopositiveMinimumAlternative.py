@@ -42,12 +42,12 @@ def compute_copositive_minimum_qcqp(matrix,mode = 'complete'):
             if any(v != np.zeros(d)) and all(v >= np.zeros(d)):
                 val = v @ matrix @ v
                 if val == minC:
-                    if not any([all(v == MinCrat[j]) for j in range(len(MinC))]):
-                        MinCrat.append(v.copy())
+                    if not any([all(v == MinC[j]) for j in range(len(MinC))]):
+                        MinC.append(v.copy())
                 elif val < minC:
                     if mode == 'complete':
                         minC = val
-                        MinCrat = [v.copy()]
+                        MinC = [v.copy()]
                         m = [0 for n in range(d)]
                         v = np.zeros(d)
                         PartialSums = np.full([d,d],F(0,1))
