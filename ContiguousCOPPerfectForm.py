@@ -16,7 +16,7 @@ def contiguous_cop_perfect_matrix(perfect_matrix,extreme_ray,MinC,method = 'None
     #the matrix P+l*R has a copositive minimum of 1 and the matrix P + u*R has a copositive minimum strictly smaller than 1, but is still strictly copositive
     #If by any chance during this iteration process u = a, the matrix P+ u*R with its minimal vectors is returned
     l,u = F(0,1),F(1,1)
-    res = copositive_test(perfect_matrix + u*extreme_ray,'strict')
+    res = copositive_test((perfect_matrix + u*extreme_ray).copy(),'strict')
     if res:
         m, M = compute_copositive_minimum(perfect_matrix + u*extreme_ray, 1, mode = 'partial')
         if m == 1:
@@ -27,7 +27,7 @@ def contiguous_cop_perfect_matrix(perfect_matrix,extreme_ray,MinC,method = 'None
     while not res or m == 1:
         if not res:
             u = F(l + u,2)
-            res = copositive_test(perfect_matrix + u*extreme_ray,'strict')
+            res = copositive_test((perfect_matrix + u*extreme_ray).copy(),'strict')
             if res:
                 m,M = compute_copositive_minimum(perfect_matrix + u*extreme_ray, 1, mode = 'partial')
                 if m == 1:
@@ -43,7 +43,7 @@ def contiguous_cop_perfect_matrix(perfect_matrix,extreme_ray,MinC,method = 'None
             elif m < 1:
                 break
             l,u = u,2*u
-            res = copositive_test(perfect_matrix + u*extreme_ray,'strict')
+            res = copositive_test((perfect_matrix + u*extreme_ray).copy(),'strict')
     #After computing l and u we will compute the Set S of all nonnegative integer vectors v, such that v^T (P + uR) v < 1
     #Then we will set a = min (1 - v^T P v)/ v^T R v.
     #This can be done with a direct approach where all vectors in S are enumerated and the minimum is calculated.
