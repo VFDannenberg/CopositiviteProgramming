@@ -9,6 +9,7 @@ from ContiguousCOPPerfectForm import contiguous_cop_perfect_matrix
 from CopositiveTest import copositive_test
 from DoubleDescriptionMethod import double_description_method
 from RationalMatrixTools import convert_matrix_fractional, matrix_rank
+from ComputeExtremeRays import extremalrays
 
 #For a given completely copositive matrix Q which omits a rational cp-factorisation and a given COP-perfect matrix P,
 #this function computes a rational cp-factorisation via a simplex-type method
@@ -33,8 +34,8 @@ def rational_cp_factorisation(matrix,P):
         return 0
     #We compute the copositive minimum and the minimal vectors of P, if there are too few, the algorithm returns an error
     minC, MinC = compute_copositive_minimum(P,1)
-    if rank_MinC(Minc.copy()) != comb(d+1,2):
-        print(P, ' is no COP-perfect, since ', MinC, ' has not enough linear independend elements')
+    if rank_MinC(MinC.copy()) != comb(d+1,2):
+        print(P, ' is not COP-perfect, since ', MinC, ' has not enough linear independend elements')
         return 0
     seed()
     #To check wether Q is in the voronoi cone of the current COP-perfect matrix P, we solve the linear program
@@ -44,25 +45,29 @@ def rational_cp_factorisation(matrix,P):
     #If the optimal value is negative, Q is not in the cone and we calculate the next COP-perfect matrix
     Cmatrix,matrixvector = define_linearprogram(matrix.copy(),MinC.copy())
     B = Variable(comb(d+1,2))
-    problem = Problem(Minimize((B @ matrixvector).trace()),[Cmatrtix @ B >= 0])
+    problem = Problem(Minimize((B @ matrixvector)),[Cmatrix @ B >= 0])
     while problem.solve() < 0:
         #To get the next matrix, we compute the extreme rays of the voronoi cone of P
         #and than choose an extreme ray R with <R,Q> < 0 by a certain pivot rule (here we used "randomised" selection)
         #Then we compute the contiguous COP-perfect matrix along the direction of R
         V = dual_voronoi_cone(MinC.copy())
-        Ext = [*filter(lambda R: (R @ matrix).trace() < 0,compute_extreme_rays(V,d))]
-        R = Ext[randrange(0,len(Ext))]
+        Ext = [*filter(lambda R: (R @ matrix).trace() < 0,extremalrays(V,d))]
+        if len(Ext) == 0:
+            alpha = caratheodory(matrix.copy(),MinC.copy())
+            print(matrix, 'is completely positive with CP factorization:')
+            return alpha, MinC
+        R = Ext[randrange(len(Ext))]
         P, MinC = contiguous_cop_perfect_matrix(P,R,MinC)
-        Cmatrix,matrixvector = define_linearprogram(matrix,MinC)
-        B = cp.Variable(comb(d+1,2))
-        problem = Problem(Minimize((B @ matrixvector).trace()),[Cmatrix @ B >= 0])
+        Cmatrix,matrixvector = define_linearprogram(matrix.copy(),MinC.copy())
+        B = Variable(comb(d+1,2))
+        problem = Problem(Minimize((B @ matrixvector)),[Cmatrix @ B >= 0])
     #If we are in the voronoi-cone we can compute a rational cp-factorisation by solving the linear program
     #                                                                                                       min 0^T alpha
     #                                                                                                       s.t (vec(v_{1}v_{1}^T),...,vec(v_{n}v_{n}^T))alpha = vec(Q)
     #                                                                                                           alpha >= 0
     #                                                                                                           n = |MinC|, v_{i} is in MinC
     #where vec(A) is the vector that results in stacking the rows of A on top of each other.
-    alpha = caratheodory(matrix,MinC)
+    alpha = caratheodory(matrix.copy(),MinC.copy())
     print('The CP factorization of ', matrix, ' is:')
     return alpha, MinC
 
@@ -70,7 +75,7 @@ def rational_cp_factorisation(matrix,P):
 #For a given matrix Q and a COP-perfect matrix P gives either a copositive witness matrix B with <Q,B> < 0 if Q is not completely positive
 #or a rational cp-factorization of Q, if it omits one. If it doesn't, the algorithms might not terminate
 #The only differences to the rational_cp_factorisation-function are a test wether <P,Q> < 0 for all COP-perfect matrices which are seen in the algorithm
-# and a test wether the chosen extremal ray R is nonnegativ ( and as such copositive ). Because R is chosen, such that <R,Q> < 0, P or R are Witness matrices for
+# and a test wether the chosen extremal ray R is nonnegative ( and as such copositive ). Because R is chosen, such that <R,Q> < 0, P or R are Witness matrices for
 #the non-complete positivity of Q
 def cp_membership_algorithm(matrix, P):
     if len(matrix[0,:]) != len(matrix[:,0]):
@@ -90,7 +95,7 @@ def cp_membership_algorithm(matrix, P):
         print(P, ' is not symmetric')
         return 0
     minC, MinC = compute_copositive_minimum(P,1)
-    if rank_MinC(Minc.copy()) != comb(d+1,2):
+    if rank_MinC(MinC.copy()) != comb(d+1,2):
         print(P, ' is no COP-perfect, since ', MinC, ' has not enough linear independend elements')
         return 0
     if (P @ matrix).trace() < 0:
@@ -102,8 +107,12 @@ def cp_membership_algorithm(matrix, P):
     problem = Problem(Minimize(B @ matrixvector),[Cmatrix @ B >= 0])
     while problem.solve() < 0:
         V = dual_voronoi_cone(MinC.copy())
-        Ext = [*filter(lambda R: (R @ matrix).trace() < 0,compute_extreme_rays(V,d))]
-        R = Ext[randrange(0,len(Ext))]
+        Ext = [*filter(lambda R: (R @ matrix).trace() < 0,extremalrays(V,d))]
+        if len(Ext) == 0:
+            alpha = caratheodory(matrix.copy(),MinC.copy())
+            print(matrix, 'is completely positive with CP factorization:')
+            return alpha, MinC
+        R = Ext[randrange(len(Ext))]
         if all((R >= np.zeros([d,d])).reshape(d**2,)):
             print(matrix, ' is not completely positive with copositive witness matrix:')
             return R
@@ -181,6 +190,7 @@ def caratheodory(matrix,MinC):
     matrixvector = np.array([matrix[i][j] for i in range(d) for j in range(i,d)])
     alpha = Variable(n)
     problem = Problem(Minimize(np.zeros(n) @ alpha), [Cmatrix @ alpha <= matrixvector, Cmatrix @ alpha >= matrixvector])
+    problem.solve()
     return alpha.value
 
 
