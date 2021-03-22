@@ -1,7 +1,7 @@
 import numpy as np
 from math import floor, sqrt 
 from fractions import Fraction as F
-from CopositivePartition import copositive_partition, copositive_partition_longest_edge
+from CopositivePartition import copositive_partition
 from CopositiveTest import copositive_test
 from RationalMatrixTools import inverse_matrix, hermite_normal_form, scale_to_integer_vector, fractional_part
 
